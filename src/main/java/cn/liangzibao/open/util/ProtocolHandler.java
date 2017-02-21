@@ -11,6 +11,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,8 +69,13 @@ public class ProtocolHandler {
     }
 
     static private Map<String, String> parseResponse(String responseBody) {
+        JSONObject responseJson;
+        responseJson = (JSONObject) JSONValue.parse(responseBody);
+
         Map<String, String> responseMap = new HashMap<String, String>();
-        responseMap.put("response", responseBody);
+        for (Object key : responseJson.keySet()) {
+            responseMap.put((String)key, responseJson.get(key).toString());
+        }
 
         return responseMap;
     }

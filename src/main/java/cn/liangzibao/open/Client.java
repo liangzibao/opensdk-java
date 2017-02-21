@@ -2,18 +2,17 @@ package cn.liangzibao.open;
 
 import cn.liangzibao.open.util.PacketProcessTool;
 
+import cn.liangzibao.open.util.ProtocolHandler;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wangbai on 2017/2/20.
@@ -52,7 +51,7 @@ public class Client {
         this.charset = charset;
     }
 
-    public JSONObject invoke(String serviceName, JSONObject bizParams) {
+    public JSONObject invoke(String serviceName, JSONObject bizParams) throws ProtocolException {
         String bizContent;
 
         if (bizParams != null) {
@@ -78,14 +77,25 @@ public class Client {
         String sign = PacketProcessTool.sign(this.privateKey, signPacket.toString());
 
         //build the http request params
-        List<NameValuePair> protocolParams = new ArrayList<NameValuePair>();
-        protocolParams.add(new BasicNameValuePair("app_key", this.appKey));
-        protocolParams.add(new BasicNameValuePair("biz_content", bizContent));
-        protocolParams.add(new BasicNameValuePair("charset", this.charset));
-        protocolParams.add(new BasicNameValuePair("format", this.format));
-        protocolParams.add(new BasicNameValuePair("service_name", serviceName));
-        protocolParams.add(new BasicNameValuePair("timestamp", requestTime.toString()));
-        protocolParams.add(new BasicNameValuePair("biz_content", bizContent));
+        Map<String, String> protocolParams = new HashMap<String, String>();
+        protocolParams.put("app_key", this.appKey);
+        protocolParams.put("biz_content", bizContent);
+        protocolParams.put("charset", this.charset);
+        protocolParams.put("format", this.format);
+        protocolParams.put("service_name", serviceName);
+        protocolParams.put("sign", sign);
+        protocolParams.put("sign_type", this.signType);
+        protocolParams.put("timestamp", requestTime.toString());
+        protocolParams.put("version", this.version);
+
+        Map<String, String> responseParams;
+        try {
+            responseParams = ProtocolHandler.invoke(this.baseUrl, protocolParams);
+        } catch(Exception e) {
+            throw new ProtocolException("Protocol runtime error", e);
+        }
+
+
         return null;
     }
 

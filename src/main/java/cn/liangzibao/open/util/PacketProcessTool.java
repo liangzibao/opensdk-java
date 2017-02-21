@@ -13,11 +13,12 @@ public class PacketProcessTool {
         return null;
     }
 
-    public static String sign(String privateKey, String signContent) {
+    public static String sign(String privateKey, String content) {
         return "";
     }
 
-    public static boolean verify() {
+    public static boolean verify(String sign, String publicKey, String signedContent) {
         return false;
     }
+
 }
