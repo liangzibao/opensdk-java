@@ -15,7 +15,7 @@ public class Main {
     public static void main(String args[]) {
 
         JSONObject j = new JSONObject();
-        j.put("name", "wangbai");
+        j.put("name", "王柏");
 
         String publicKey =
                 "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEiwK0MGkAa2iKDHWADefwkYvV" +
@@ -41,7 +41,6 @@ public class Main {
 
         String bizContent = PacketProcessTool.bizParamsEncrypt(publicKey, j);
         System.out.println(bizContent);
-
         System.out.println(PacketProcessTool.bizParamsDecrypt(privateKey, bizContent));
 
         try {
@@ -63,7 +62,8 @@ public class Main {
                     + "1234567890"
                     + "1234567890"
                     + "1234567890"
-                    + "1234567890";
+                    + "1234567890"
+                    + "王柏";
 
             Cipher encryptCipher = Cipher.getInstance("RSA");
             encryptCipher.init(Cipher.ENCRYPT_MODE, pub);

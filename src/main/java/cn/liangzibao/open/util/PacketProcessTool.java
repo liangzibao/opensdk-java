@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
@@ -23,6 +24,7 @@ public class PacketProcessTool {
 
     public static final String CHARSET = "UTF-8";
     public static final String CIPHER_ALGORITHM = "RSA";
+    public static final String SIGN_ALGORITHM = "SHA256withRSA";
 
     public static final int KEY_LENGTH = 1024;
 
@@ -81,10 +83,42 @@ public class PacketProcessTool {
             signPacket.put(key, params.get(key));
         }
 
-        return "";
+        try {
+            PrivateKey privateKeyStore = buildPrivateKeyFromString(privateKey);
+            Signature privateSignature = Signature.getInstance(SIGN_ALGORITHM);
+            privateSignature.initSign(privateKeyStore);
+            privateSignature.update(signPacket.toString().getBytes(CHARSET));
+            byte[] signature = privateSignature.sign();
+
+            return new BASE64Encoder().encode(signature);
+        } catch (Exception e) {
+        }
+
+
+        return null;
     }
 
-    public static boolean verify(String sign, String publicKey, Map<String, String> params) {
+    public static boolean verify(String publicKey, String sign, Map<String, String> params) {
+        Collection<String> keySet = params.keySet();
+        List<String> keyList= new ArrayList<String>(keySet);
+        Collections.sort(keyList);
+
+        JSONObject signPacket = new JSONObject();
+        for(String key : keyList) {
+            signPacket.put(key, params.get(key));
+        }
+
+        try {
+            PublicKey publicKeyStore = buildPublicKeyFromString(publicKey);
+            Signature publicSignature = Signature.getInstance(SIGN_ALGORITHM);
+
+            publicSignature.initVerify(publicKeyStore);
+            publicSignature.update(signPacket.toString().getBytes(CHARSET));
+            byte[] signatureBytes = new BASE64Decoder().decodeBuffer(sign);
+
+            return publicSignature.verify(signatureBytes);
+        } catch (Exception e) {
+        }
         return false;
     }
 
