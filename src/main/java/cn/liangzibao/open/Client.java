@@ -1,5 +1,7 @@
 package cn.liangzibao.open;
 
+import cn.liangzibao.open.exception.ResponseError;
+import cn.liangzibao.open.exception.VerifyError;
 import cn.liangzibao.open.util.PacketProcessTool;
 
 import cn.liangzibao.open.util.ProtocolHandler;
@@ -49,7 +51,8 @@ public class Client {
         this.params = new HashMap<String, String>();
     }
 
-    public JSONObject invoke(String serviceName, JSONObject bizParams) throws ProtocolException {
+    public JSONObject invoke(String serviceName, JSONObject bizParams)
+            throws ProtocolException, VerifyError, ResponseError {
         String bizContent = PacketProcessTool.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
 
@@ -76,11 +79,14 @@ public class Client {
         sign = responseParams.get("sign");
         responseParams.remove("sign");
         if (!PacketProcessTool.verify(responseParams.get("sign"), this.lzbPublicKey, responseParams)) {
-
+            throw new VerifyError("response signature fails to verify");
         }
 
         //check response error
-
+        if (responseParams.get("ret_code") != null
+                && responseParams.get("ret_code").equals("200")) {
+            throw new ResponseError(responseParams.get("ret_msg"), Long.valueOf(responseParams.get("ret_code")));
+        }
         
         return PacketProcessTool.bizParamsDecrypt(this.privateKey, responseParams.get("biz_content"));
     }

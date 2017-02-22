@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import javax.crypto.Cipher;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.HashMap;
 
 /**
  * Created by wangbai on 2017/2/17.
@@ -39,9 +40,23 @@ public class Main {
                 "nAT7H68otijYczVWBPl4GIEXfLLnGeUN2sDhTCXkEeQAM2RHUqAMw4Dfe+cP1SPd" +
                 "GpIz69ghWGnSxQ==";
 
-        String bizContent = PacketProcessTool.bizParamsEncrypt(publicKey, j);
-        System.out.println(bizContent);
-        System.out.println(PacketProcessTool.bizParamsDecrypt(privateKey, bizContent));
+        //String bizContent = PacketProcessTool.bizParamsEncrypt(publicKey, j);
+        //System.out.println(bizContent);
+        //System.out.println(PacketProcessTool.bizParamsDecrypt(privateKey, bizContent));
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("name", "wangbai");
+        params.put("age", "11");
+
+        String sign = PacketProcessTool.sign(privateKey, params);
+        System.out.println(sign);
+
+        HashMap<String, String> params1 = new HashMap<String, String>();
+        params.put("age", "11");
+        params.put("name", "wangbai");
+
+        boolean verified = PacketProcessTool.verify(publicKey, sign, params);
+        System.out.println("sign :" + verified);
 
         try {
             PublicKey pub = PacketProcessTool.buildPublicKeyFromString(publicKey);
