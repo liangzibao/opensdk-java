@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class ProtocolUtil {
 
-    static final String USER_AGENT = "LZBClient/1.0(Java 1.8)";
+    static final String USER_AGENT = "LZB/Openapi SDK/v1.0.0(Java 1.8)";
     static final String CONTENT_TYPE = "application/x-www-form-urlencoded;charset=utf-8";
 
     static public Map<String, String> invoke(String Url, Map<String, String> params) throws IOException {
@@ -56,6 +56,17 @@ public class ProtocolUtil {
         } finally {
             httpclient.close();
         }
+    }
+
+    static public String buildRequestUrl(String Url, Map<String, String> params) {
+        try {
+            String urlParam = EntityUtils.toString(new UrlEncodedFormEntity(ProtocolUtil.buildRequest(params)));
+
+            return Url + "?" + urlParam;
+        } catch(Exception e) {
+        }
+
+        return null;
     }
 
     static private List<NameValuePair> buildRequest(Map<String, String> params) {

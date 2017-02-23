@@ -8,6 +8,8 @@ import cn.liangzibao.open.utils.ProtocolUtil;
 import org.apache.http.ProtocolException;
 import org.json.simple.JSONObject;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.*;
 
 /**
@@ -16,8 +18,8 @@ import java.util.*;
 public class Client {
 
     private String baseUrl;
-    private String privateKey;
-    private String lzbPublicKey;
+    private PrivateKey privateKey;
+    private PublicKey lzbPublicKey;
 
     HashMap<String, String> params;
 
@@ -36,8 +38,12 @@ public class Client {
         this.init();
 
         this.baseUrl = baseUrl;
-        this.privateKey = privateKey;
-        this.lzbPublicKey = lzbPublicKey;
+        try {
+            this.privateKey = PacketUtil.buildPrivateKeyFromString(privateKey);
+            this.lzbPublicKey = PacketUtil.buildPublicKeyFromString(lzbPublicKey);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         this.params.put("app_key", appKey);
         this.params.put("version", version);
@@ -54,8 +60,6 @@ public class Client {
             throws ProtocolException, VerifyError, ResponseError {
         String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
-
-        System.out.println(bizContent);
 
         //build protocol params
         Map<String, String> protocolParams = new HashMap<String, String>();
@@ -93,4 +97,21 @@ public class Client {
         return PacketUtil.bizParamsDecrypt(this.privateKey, responseParams.get("biz_content"));
     }
 
+    public String buildRequestUrl(String serviceName, JSONObject bizParams) {
+        String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
+        Long requestTime = new Date().getTime()/1000;
+
+        //build protocol params
+        Map<String, String> protocolParams = new HashMap<String, String>();
+        protocolParams = (Map<String, String>) this.params.clone();
+        protocolParams.put("biz_content", bizContent);
+        protocolParams.put("service_name", serviceName);
+        protocolParams.put("timestamp", requestTime.toString());
+
+        //add sign
+        String sign = PacketUtil.sign(this.privateKey, protocolParams);
+        protocolParams.put("sign", sign);
+
+        return ProtocolUtil.buildRequestUrl(this.baseUrl, protocolParams);
+    }
 }

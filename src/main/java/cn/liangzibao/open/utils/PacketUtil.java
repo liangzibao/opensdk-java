@@ -29,7 +29,7 @@ public class PacketUtil {
     public static final int MAX_ENCRYPT_BLOCK_LENGTH = 117;
     public static final int MAX_DECRYPT_BLOCK_LENGTH = 128;
 
-    public static String bizParamsEncrypt(String publicKey, JSONObject bizParams) {
+    public static String bizParamsEncrypt(PublicKey publicKey, JSONObject bizParams) {
         String bizContent;
 
         if (bizParams != null) {
@@ -39,10 +39,8 @@ public class PacketUtil {
         }
 
         try {
-            PublicKey publicKeyStore = buildPublicKeyFromString(publicKey);
-
             Cipher c = Cipher.getInstance(CIPHER_ALGORITHM);
-            c.init(Cipher.ENCRYPT_MODE, publicKeyStore);
+            c.init(Cipher.ENCRYPT_MODE, publicKey);
 
             byte[] encryptedBytes = cipherCodecByBlock(c, bizContent.getBytes(CHARSET), MAX_ENCRYPT_BLOCK_LENGTH);
             return new BASE64Encoder().encode(encryptedBytes);
@@ -52,14 +50,12 @@ public class PacketUtil {
         return null;
     }
 
-    public static JSONObject bizParamsDecrypt(String privateKey, String bizContent) {
+    public static JSONObject bizParamsDecrypt(PrivateKey privateKey, String bizContent) {
         JSONObject bizParams = null;
 
         try {
-            PrivateKey privateKeyStore = buildPrivateKeyFromString(privateKey);
-
             Cipher d = Cipher.getInstance(CIPHER_ALGORITHM);
-            d.init(Cipher.DECRYPT_MODE, privateKeyStore);
+            d.init(Cipher.DECRYPT_MODE, privateKey);
 
             byte[] data = new BASE64Decoder().decodeBuffer(bizContent);
             byte[] encryptedBytes = cipherCodecByBlock(d, data, MAX_DECRYPT_BLOCK_LENGTH);
@@ -70,7 +66,7 @@ public class PacketUtil {
         return bizParams;
     }
 
-    public static String sign(String privateKey, Map<String, String> params) {
+    public static String sign(PrivateKey privateKey, Map<String, String> params) {
         Collection<String> keySet = params.keySet();
         List<String> keyList= new ArrayList<String>(keySet);
         Collections.sort(keyList);
@@ -95,9 +91,8 @@ public class PacketUtil {
         jsonStr.append('}');
 
         try {
-            PrivateKey privateKeyStore = buildPrivateKeyFromString(privateKey);
             Signature privateSignature = Signature.getInstance(SIGN_ALGORITHM);
-            privateSignature.initSign(privateKeyStore);
+            privateSignature.initSign(privateKey);
             privateSignature.update(jsonStr.toString().replace("\\", "").getBytes(CHARSET));
             byte[] signature = privateSignature.sign();
 
@@ -108,7 +103,7 @@ public class PacketUtil {
         return null;
     }
 
-    public static boolean verify(String sign, String publicKey, Map<String, String> params) {
+    public static boolean verify(String sign, PublicKey publicKey, Map<String, String> params) {
         Collection<String> keySet = params.keySet();
         List<String> keyList= new ArrayList<String>(keySet);
         Collections.sort(keyList);
@@ -132,16 +127,14 @@ public class PacketUtil {
         jsonStr.append('}');
 
         try {
-            PublicKey publicKeyStore = buildPublicKeyFromString(publicKey);
             Signature publicSignature = Signature.getInstance(SIGN_ALGORITHM);
 
-            publicSignature.initVerify(publicKeyStore);
+            publicSignature.initVerify(publicKey);
             publicSignature.update(jsonStr.toString().replace("\\", "").getBytes(CHARSET));
             byte[] signatureBytes = new BASE64Decoder().decodeBuffer(sign);
 
             return publicSignature.verify(signatureBytes);
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return false;

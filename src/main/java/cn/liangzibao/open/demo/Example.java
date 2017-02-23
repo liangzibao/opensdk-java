@@ -1,5 +1,6 @@
-package cn.liangzibao.open;
+package cn.liangzibao.open.demo;
 
+import cn.liangzibao.open.Client;
 import cn.liangzibao.open.utils.PacketUtil;
 import org.json.simple.JSONObject;
 
@@ -70,7 +71,7 @@ public class Example {
         try {
             JSONObject bizResponse = client.invoke("lzb.flower.policy.create", bizParams);
 
-            System.out.println(bizResponse);
+            System.out.println(client.buildRequestUrl("lzb.flower.policy.create", bizParams));
         } catch (Exception e) {
             e.printStackTrace();
         }
