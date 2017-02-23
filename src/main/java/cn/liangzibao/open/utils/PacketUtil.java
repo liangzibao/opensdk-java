@@ -1,4 +1,4 @@
-package cn.liangzibao.open.util;
+package cn.liangzibao.open.utils;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -6,9 +6,7 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
-import javax.crypto.SealedObject;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -20,11 +18,11 @@ import java.util.*;
 /**
  * Created by wangbai on 2017/2/17.
  */
-public class PacketProcessTool {
+public class PacketUtil {
 
     public static final String CHARSET = "UTF-8";
     public static final String CIPHER_ALGORITHM = "RSA";
-    public static final String SIGN_ALGORITHM = "SHA256withRSA";
+    public static final String SIGN_ALGORITHM = "SHA1withRSA";
 
     public static final int KEY_LENGTH = 1024;
 
@@ -67,7 +65,6 @@ public class PacketProcessTool {
             byte[] encryptedBytes = cipherCodecByBlock(d, data, MAX_DECRYPT_BLOCK_LENGTH);
             bizParams = (JSONObject) JSONValue.parse(new String(encryptedBytes, CHARSET));
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return bizParams;
@@ -78,47 +75,75 @@ public class PacketProcessTool {
         List<String> keyList= new ArrayList<String>(keySet);
         Collections.sort(keyList);
 
-        JSONObject signPacket = new JSONObject();
+        StringBuilder jsonStr = new StringBuilder();
+        jsonStr.append('{');
         for(String key : keyList) {
-            signPacket.put(key, params.get(key));
+            if (params.get(key).length() == 0) {
+                continue;
+            }
+
+            if (jsonStr.length() > 2) {
+                jsonStr.append(",");
+            }
+
+            jsonStr.append("\"")
+                    .append(JSONValue.escape(key))
+                    .append("\":\"")
+                    .append(JSONValue.escape(params.get(key)))
+                    .append("\"");
         }
+        jsonStr.append('}');
 
         try {
             PrivateKey privateKeyStore = buildPrivateKeyFromString(privateKey);
             Signature privateSignature = Signature.getInstance(SIGN_ALGORITHM);
             privateSignature.initSign(privateKeyStore);
-            privateSignature.update(signPacket.toString().getBytes(CHARSET));
+            privateSignature.update(jsonStr.toString().replace("\\", "").getBytes(CHARSET));
             byte[] signature = privateSignature.sign();
 
             return new BASE64Encoder().encode(signature);
         } catch (Exception e) {
         }
 
-
         return null;
     }
 
-    public static boolean verify(String publicKey, String sign, Map<String, String> params) {
+    public static boolean verify(String sign, String publicKey, Map<String, String> params) {
         Collection<String> keySet = params.keySet();
         List<String> keyList= new ArrayList<String>(keySet);
         Collections.sort(keyList);
 
-        JSONObject signPacket = new JSONObject();
+        StringBuilder jsonStr = new StringBuilder();
+        jsonStr.append('{');
         for(String key : keyList) {
-            signPacket.put(key, params.get(key));
+            if (params.get(key).length() == 0) {
+                continue;
+            }
+
+            if (jsonStr.length() > 2) {
+                jsonStr.append(",");
+            }
+            jsonStr.append("\"")
+                    .append(key)
+                    .append("\":\"")
+                    .append(params.get(key))
+                    .append("\"");
         }
+        jsonStr.append('}');
 
         try {
             PublicKey publicKeyStore = buildPublicKeyFromString(publicKey);
             Signature publicSignature = Signature.getInstance(SIGN_ALGORITHM);
 
             publicSignature.initVerify(publicKeyStore);
-            publicSignature.update(signPacket.toString().getBytes(CHARSET));
+            publicSignature.update(jsonStr.toString().replace("\\", "").getBytes(CHARSET));
             byte[] signatureBytes = new BASE64Decoder().decodeBuffer(sign);
 
             return publicSignature.verify(signatureBytes);
         } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return false;
     }
 
@@ -157,4 +182,5 @@ public class PacketProcessTool {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyByte);
         return kf.generatePrivate(keySpec);
     }
+
 }

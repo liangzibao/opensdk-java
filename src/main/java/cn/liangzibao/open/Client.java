@@ -2,11 +2,10 @@ package cn.liangzibao.open;
 
 import cn.liangzibao.open.exception.ResponseError;
 import cn.liangzibao.open.exception.VerifyError;
-import cn.liangzibao.open.util.PacketProcessTool;
+import cn.liangzibao.open.utils.PacketUtil;
 
-import cn.liangzibao.open.util.ProtocolHandler;
+import cn.liangzibao.open.utils.ProtocolUtil;
 import org.apache.http.ProtocolException;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -53,8 +52,10 @@ public class Client {
 
     public JSONObject invoke(String serviceName, JSONObject bizParams)
             throws ProtocolException, VerifyError, ResponseError {
-        String bizContent = PacketProcessTool.bizParamsEncrypt(this.lzbPublicKey, bizParams);
+        String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
+
+        System.out.println(bizContent);
 
         //build protocol params
         Map<String, String> protocolParams = new HashMap<String, String>();
@@ -64,31 +65,32 @@ public class Client {
         protocolParams.put("timestamp", requestTime.toString());
 
         //add sign
-        String sign = PacketProcessTool.sign(this.privateKey, protocolParams);
+        String sign = PacketUtil.sign(this.privateKey, protocolParams);
         protocolParams.put("sign", sign);
 
         //send request
         Map<String, String> responseParams;
         try {
-            responseParams = ProtocolHandler.invoke(this.baseUrl, protocolParams);
+            responseParams = ProtocolUtil.invoke(this.baseUrl, protocolParams);
         } catch(Exception e) {
             throw new ProtocolException("Protocol runtime error", e);
+        }
+
+        //check response error
+        if (responseParams.get("ret_code") != null
+                && !responseParams.get("ret_code").equals("200")) {
+            throw new ResponseError(responseParams.get("ret_msg"), Long.valueOf(responseParams.get("ret_code")));
         }
 
         //verify response sign
         sign = responseParams.get("sign");
         responseParams.remove("sign");
-        if (!PacketProcessTool.verify(responseParams.get("sign"), this.lzbPublicKey, responseParams)) {
+
+        if (!PacketUtil.verify(sign, this.lzbPublicKey, responseParams)) {
             throw new VerifyError("response signature fails to verify");
         }
 
-        //check response error
-        if (responseParams.get("ret_code") != null
-                && responseParams.get("ret_code").equals("200")) {
-            throw new ResponseError(responseParams.get("ret_msg"), Long.valueOf(responseParams.get("ret_code")));
-        }
-        
-        return PacketProcessTool.bizParamsDecrypt(this.privateKey, responseParams.get("biz_content"));
+        return PacketUtil.bizParamsDecrypt(this.privateKey, responseParams.get("biz_content"));
     }
 
 }

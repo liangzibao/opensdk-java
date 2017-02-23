@@ -1,4 +1,4 @@
-package cn.liangzibao.open.util;
+package cn.liangzibao.open.utils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Created by wangbai on 2017/2/20.
  */
-public class ProtocolHandler {
+public class ProtocolUtil {
 
     static final String USER_AGENT = "LZBClient/1.0(Java 1.8)";
     static final String CONTENT_TYPE = "application/x-www-form-urlencoded;charset=utf-8";
@@ -34,7 +34,7 @@ public class ProtocolHandler {
             final HttpPost requestMethod = new HttpPost(Url);
             requestMethod.setHeader("User-Agent", USER_AGENT);
             requestMethod.setHeader("Content-Type", CONTENT_TYPE);
-            requestMethod.setEntity(new UrlEncodedFormEntity(ProtocolHandler.buildRequest(params)));
+            requestMethod.setEntity(new UrlEncodedFormEntity(ProtocolUtil.buildRequest(params)));
 
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
                 public String handleResponse(final HttpResponse response) throws IOException {
