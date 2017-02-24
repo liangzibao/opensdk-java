@@ -25,9 +25,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.*;
 
-/**
- * Created by wangbai on 2017/2/20.
- */
+
 final public class Client {
 
     private String baseUrl;

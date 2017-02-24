@@ -33,9 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by wangbai on 2017/2/20.
- */
+
 public class ProtocolUtil {
 
     static final String USER_AGENT = "LZB/Openapi SDK/v1.0.0(Java 1.8)";

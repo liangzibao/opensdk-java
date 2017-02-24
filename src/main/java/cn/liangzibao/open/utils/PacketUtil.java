@@ -26,9 +26,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 
-/**
- * Created by wangbai on 2017/2/17.
- */
+
 public class PacketUtil {
 
     public static final String CHARSET = "UTF-8";
