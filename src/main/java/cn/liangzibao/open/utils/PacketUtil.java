@@ -1,3 +1,16 @@
+// Copyright 2017 Liangzibao, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package cn.liangzibao.open.utils;
 
 import org.json.simple.JSONObject;
@@ -139,20 +152,20 @@ public class PacketUtil {
     }
 
     public static byte[] cipherCodecByBlock(Cipher c, byte[] data, int blockLength) throws Exception {
-        int inputLen = data.length;
-        int offSet = 0;
+        int inputLength = data.length;
+        int offset = 0;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] cache;
         int i = 0;
-        while (inputLen - offSet > 0) {
-            if (inputLen - offSet > blockLength) {
-                cache = c.doFinal(data, offSet, blockLength);
+        while (inputLength - offset > 0) {
+            if (inputLength - offset > blockLength) {
+                cache = c.doFinal(data, offset, blockLength);
             } else {
-                cache = c.doFinal(data, offSet, inputLen - offSet);
+                cache = c.doFinal(data, offset, inputLength - offset);
             }
             out.write(cache, 0, cache.length);
             i++;
-            offSet = i * blockLength;
+            offset = i * blockLength;
         }
         byte[] codecData = out.toByteArray();
         out.close();
