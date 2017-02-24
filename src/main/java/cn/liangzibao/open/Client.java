@@ -15,13 +15,13 @@ import java.util.*;
 /**
  * Created by wangbai on 2017/2/20.
  */
-public class Client {
+final public class Client {
 
     private String baseUrl;
     private PrivateKey privateKey;
     private PublicKey lzbPublicKey;
 
-    HashMap<String, String> params;
+    private HashMap<String, String> params;
 
     public Client(String baseUrl, String privateKey, String lzbPublicKey, String appKey) {
         this(baseUrl, privateKey, lzbPublicKey, appKey, "1.0.0", "JSON", "RSA", "UTF-8");
@@ -52,8 +52,8 @@ public class Client {
         this.params.put("charset", charset);
     }
 
-    protected void init() {
-        this.params = new HashMap<String, String>();
+    private void init() {
+        this.params = new HashMap<>();
     }
 
     public JSONObject invoke(String serviceName, JSONObject bizParams)
@@ -62,8 +62,8 @@ public class Client {
         Long requestTime = new Date().getTime()/1000;
 
         //build protocol params
-        Map<String, String> protocolParams = new HashMap<String, String>();
-        protocolParams = (Map<String, String>) this.params.clone();
+        @SuppressWarnings("unchecked")
+        Map<String, String> protocolParams = (HashMap<String, String>) this.params.clone();
         protocolParams.put("biz_content", bizContent);
         protocolParams.put("service_name", serviceName);
         protocolParams.put("timestamp", requestTime.toString());
@@ -102,8 +102,8 @@ public class Client {
         Long requestTime = new Date().getTime()/1000;
 
         //build protocol params
-        Map<String, String> protocolParams = new HashMap<String, String>();
-        protocolParams = (Map<String, String>) this.params.clone();
+        @SuppressWarnings("unchecked")
+        Map<String, String> protocolParams = (HashMap<String, String>) this.params.clone();
         protocolParams.put("biz_content", bizContent);
         protocolParams.put("service_name", serviceName);
         protocolParams.put("timestamp", requestTime.toString());
