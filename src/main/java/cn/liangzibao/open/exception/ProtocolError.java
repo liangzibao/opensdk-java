@@ -14,17 +14,17 @@
 package cn.liangzibao.open.exception;
 
 
-public abstract class AbstractGetwayError extends Exception {
+public class ProtocolError extends Exception {
 
-    public AbstractGetwayError() {
+    public ProtocolError() {
         super();
     }
 
-    public AbstractGetwayError(String message) {
+    public ProtocolError(String message) {
         super(message);
     }
 
-    public AbstractGetwayError(String message, Throwable cause) {
+    public ProtocolError(String message, Throwable cause) {
         super(message, cause);
     }
 

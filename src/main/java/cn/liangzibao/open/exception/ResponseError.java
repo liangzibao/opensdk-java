@@ -14,7 +14,7 @@
 package cn.liangzibao.open.exception;
 
 
-public class ResponseError extends AbstractGetwayError {
+public class ResponseError extends Exception {
 
     protected long errorCode;
 

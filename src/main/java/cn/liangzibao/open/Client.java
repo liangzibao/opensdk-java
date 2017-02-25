@@ -14,7 +14,7 @@
 package cn.liangzibao.open;
 
 import cn.liangzibao.open.exception.ResponseError;
-import cn.liangzibao.open.exception.VerifyError;
+import cn.liangzibao.open.exception.SignVerificationError;
 import cn.liangzibao.open.utils.PacketUtil;
 
 import cn.liangzibao.open.utils.ProtocolUtil;
@@ -68,7 +68,7 @@ final public class Client {
     }
 
     public JSONObject invoke(String serviceName, JSONObject bizParams)
-            throws ProtocolException, VerifyError, ResponseError {
+            throws ProtocolException, SignVerificationError, ResponseError {
         String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
 
@@ -102,7 +102,7 @@ final public class Client {
         responseParams.remove("sign");
 
         if (!PacketUtil.verify(sign, this.lzbPublicKey, responseParams)) {
-            throw new VerifyError("response signature fails to verify");
+            throw new SignVerificationError("response signature fails to verify");
         }
 
         return PacketUtil.bizParamsDecrypt(this.privateKey, responseParams.get("biz_content"));

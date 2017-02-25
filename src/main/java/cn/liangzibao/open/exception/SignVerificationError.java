@@ -14,17 +14,19 @@
 package cn.liangzibao.open.exception;
 
 
-public class ProtocolException extends Exception {
+import java.lang.*;
 
-    public ProtocolException() {
+public class SignVerificationError extends Exception {
+
+    public SignVerificationError() {
         super();
     }
 
-    public ProtocolException(String message) {
+    public SignVerificationError(String message) {
         super(message);
     }
 
-    public ProtocolException(String message, Throwable cause) {
+    public SignVerificationError(String message, Throwable cause) {
         super(message, cause);
     }
 
