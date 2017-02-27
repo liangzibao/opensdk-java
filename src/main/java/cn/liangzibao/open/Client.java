@@ -38,8 +38,8 @@ final public class Client {
      * 量子保开放平台接口封装
      *
      * @param baseUrl 网关调用URL，不同环境该URL不同
-     * @param privateKey 开发者密钥对的私钥，用于对公共请求参数做签名，和对业务参数做解密
-     * @param lzbPublicKey 量子保开放平台对外公钥，用于对公共响应参数做验签，和对业务请求参数做加密
+     * @param privateKey 开发者密钥对的私钥，用于对公共请求参数做签名，和对业务API参数做解密
+     * @param lzbPublicKey 量子保开放平台对外公钥，用于对公共响应参数做验签，和对业务API请求参数做加密
      * @param appKey 量子保开放平台为开发者分配的唯一标识
      */
     public Client(String baseUrl, String privateKey, String lzbPublicKey, String appKey) {
@@ -50,8 +50,8 @@ final public class Client {
      * 量子保开放平台接口封装
      *
      * @param baseUrl 网关调用URL，不同环境该URL不同
-     * @param privateKey 开发者密钥对的私钥，用于对公共请求参数做签名，和对业务参数做解密
-     * @param lzbPublicKey 量子保开放平台对外公钥，用于对公共响应参数做验签，和对业务请求参数做加密
+     * @param privateKey 开发者密钥对的私钥，用于对公共请求参数做签名，和对业务API参数做解密
+     * @param lzbPublicKey 量子保开放平台对外公钥，用于对公共响应参数做验签，和对业务API请求参数做加密
      * @param appKey 量子保开放平台为开发者分配的唯一标识
      * @param version 接口版本，默认1.0.0
      * @param format 应用调用报文格式，默认JSON
@@ -90,9 +90,9 @@ final public class Client {
     /**
      * 应用调用
      *
-     * @param serviceName 业务接口标识
-     * @param bizParams 业务请求参数表
-     * @return 返回业务响应参数表，JSON对象
+     * @param serviceName 业务API名称
+     * @param bizParams 业务API请求参数表
+     * @return 返回业务API响应参数表，JSON对象
      * @throws ProtocolException 网络传输层错误异常
      * @throws SignVerificationError 响应报文签名验证失败
      * @throws ResponseError 调用失败异常
@@ -141,8 +141,8 @@ final public class Client {
     /**
      * 生成GET方式完整的调用的URL，仅用于标准HTML5页面接入
      *
-     * @param serviceName 业务接口标识
-     * @param bizParams 业务请求参数表
+     * @param serviceName 业务API名称
+     * @param bizParams 业务API请求参数表
      * @return 完整调用URL，可以直接用于浏览器或者开发平台的Webview
      */
     public String buildRequestUrl(String serviceName, JSONObject bizParams) {
