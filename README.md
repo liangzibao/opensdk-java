@@ -1,5 +1,5 @@
 # 量子保开放平台SDK - Java版
-对量子保开放平台（ http://www.liangzibao.cn/apidoc/ ）的API接入协议做基础的封装，即做为参考实现也可以直接做为项目的依赖直接引用。
+对量子保开放平台（ http://www.liangzibao.cn/apidoc/ ）的API接入协议做基础的封装，即做为参考实现，也可以做为项目的依赖直接引用。
 
 ## API接入例子
 <pre><code>
