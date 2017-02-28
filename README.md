@@ -28,7 +28,6 @@
             String serviceName = "业务API名称";
             //请参考业务API文档，进行JSON对象的组装
             JSONObject params = new JSONObject();
-            params.put("product_mask", "184371");
             JSONObject result = client.invoke(serviceName, params);
 
             System.out.println(result);
