@@ -7,6 +7,7 @@
     <groupId>cn.liangzibao</groupId>
     <artifactId>opensdk</artifactId>
     <version>1.0.0</version>
+    <name>opensdk-java</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
