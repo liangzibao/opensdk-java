@@ -141,11 +141,10 @@ final public class Client {
     /**
      * 生成GET方式完整的调用的URL，仅用于标准HTML5页面接入
      *
-     * @param serviceName 业务API名称
      * @param bizParams 业务API请求参数表
      * @return 完整调用URL，可以直接用于浏览器或者开发平台的Webview
      */
-    public String buildRequestUrl(String serviceName, JSONObject bizParams) {
+    public String buildRequestUrl(JSONObject bizParams) {
         String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
 
@@ -153,7 +152,6 @@ final public class Client {
         @SuppressWarnings("unchecked")
         Map<String, String> protocolParams = (HashMap<String, String>) this.params.clone();
         protocolParams.put("biz_content", bizContent);
-        protocolParams.put("service_name", serviceName);
         protocolParams.put("timestamp", requestTime.toString());
 
         //add sign
