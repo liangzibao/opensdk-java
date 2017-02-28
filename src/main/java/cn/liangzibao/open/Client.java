@@ -97,13 +97,13 @@ final public class Client {
      * @throws SignVerificationError 响应报文签名验证失败
      * @throws ResponseError 调用失败异常
      */
+    @SuppressWarnings("unchecked")
     public JSONObject invoke(String serviceName, JSONObject bizParams)
             throws ProtocolException, SignVerificationError, ResponseError {
         String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
 
         //build protocol params
-        @SuppressWarnings("unchecked")
         Map<String, String> protocolParams = (HashMap<String, String>) this.params.clone();
         protocolParams.put("biz_content", bizContent);
         protocolParams.put("service_name", serviceName);
@@ -144,12 +144,12 @@ final public class Client {
      * @param bizParams 业务API请求参数表
      * @return 完整调用URL，可以直接用于浏览器或者开发平台的Webview
      */
+    @SuppressWarnings("unchecked")
     public String buildRequestUrl(JSONObject bizParams) {
         String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
 
         //build protocol params
-        @SuppressWarnings("unchecked")
         Map<String, String> protocolParams = (HashMap<String, String>) this.params.clone();
         protocolParams.put("biz_content", bizContent);
         protocolParams.put("timestamp", requestTime.toString());
