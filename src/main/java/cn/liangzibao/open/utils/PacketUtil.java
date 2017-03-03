@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import javax.crypto.Cipher;
+import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayOutputStream;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -52,7 +53,7 @@ public class PacketUtil {
             c.init(Cipher.ENCRYPT_MODE, publicKey);
 
             byte[] encryptedBytes = cipherCodecByBlock(c, bizContent.getBytes(CHARSET), MAX_ENCRYPT_BLOCK_LENGTH);
-            return new String(Base64.getEncoder().encode(encryptedBytes), CHARSET);
+            return DatatypeConverter.printBase64Binary(encryptedBytes);
         } catch (Exception e) {
         }
 
@@ -66,7 +67,7 @@ public class PacketUtil {
             Cipher d = Cipher.getInstance(CIPHER_ALGORITHM);
             d.init(Cipher.DECRYPT_MODE, privateKey);
 
-            byte[] data = Base64.getDecoder().decode(bizContent);
+            byte[] data = DatatypeConverter.parseBase64Binary(bizContent);
             byte[] encryptedBytes = cipherCodecByBlock(d, data, MAX_DECRYPT_BLOCK_LENGTH);
             bizParams = (JSONObject) JSONValue.parse(new String(encryptedBytes, CHARSET));
         } catch (Exception e) {
@@ -105,7 +106,7 @@ public class PacketUtil {
             privateSignature.update(jsonStr.toString().replace("\\", "").getBytes(CHARSET));
             byte[] signature = privateSignature.sign();
 
-            return new String(Base64.getEncoder().encode(signature));
+            return DatatypeConverter.printBase64Binary(signature);
         } catch (Exception e) {
         }
 
@@ -140,7 +141,7 @@ public class PacketUtil {
 
             publicSignature.initVerify(publicKey);
             publicSignature.update(jsonStr.toString().replace("\\", "").getBytes(CHARSET));
-            byte[] signatureBytes = Base64.getDecoder().decode(sign);
+            byte[] signatureBytes = DatatypeConverter.parseBase64Binary(sign);
 
             return publicSignature.verify(signatureBytes);
         } catch (Exception e) {
@@ -177,7 +178,7 @@ public class PacketUtil {
                 .replace("\n", "");
 
         KeyFactory kf = KeyFactory.getInstance(CIPHER_ALGORITHM);
-        byte[] publicKeyByte = Base64.getDecoder().decode(publicKey.getBytes(CHARSET));
+        byte[] publicKeyByte = DatatypeConverter.parseBase64Binary(publicKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyByte);
         return kf.generatePublic(keySpec);
     }
@@ -188,7 +189,7 @@ public class PacketUtil {
                 .replace("\n", "");
 
         KeyFactory kf = KeyFactory.getInstance(CIPHER_ALGORITHM);
-        byte[] privateKeyByte = Base64.getDecoder().decode(privateKey.getBytes(CHARSET));
+        byte[] privateKeyByte = DatatypeConverter.parseBase64Binary(privateKey);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyByte);
         return kf.generatePrivate(keySpec);
     }
