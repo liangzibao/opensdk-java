@@ -23,6 +23,8 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
@@ -180,7 +182,13 @@ public class PacketUtil {
         KeyFactory kf = KeyFactory.getInstance(CIPHER_ALGORITHM);
         byte[] publicKeyByte = DatatypeConverter.parseBase64Binary(publicKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyByte);
-        return kf.generatePublic(keySpec);
+
+        RSAPublicKey pk = (RSAPublicKey) kf.generatePublic(keySpec);
+        if (pk.getModulus().bitLength() != KEY_LENGTH) {
+            throw new cn.liangzibao.open.exception.Exception("Only support the public key of " + KEY_LENGTH + " key size");
+        }
+
+        return pk;
     }
 
     public static PrivateKey buildPrivateKeyFromString(String privateKey) throws Exception {
@@ -191,7 +199,13 @@ public class PacketUtil {
         KeyFactory kf = KeyFactory.getInstance(CIPHER_ALGORITHM);
         byte[] privateKeyByte = DatatypeConverter.parseBase64Binary(privateKey);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyByte);
-        return kf.generatePrivate(keySpec);
+
+        RSAPrivateKey pk = (RSAPrivateKey) kf.generatePrivate(keySpec);
+        if (pk.getModulus().bitLength() != KEY_LENGTH) {
+            throw new cn.liangzibao.open.exception.Exception("Only support the private key of " + KEY_LENGTH + " key size");
+        }
+
+        return pk;
     }
 
 }
