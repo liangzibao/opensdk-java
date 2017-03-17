@@ -44,7 +44,7 @@
     @SuppressWarnings("unchecked")
     public static void main( String[] args ) {
 
-		String baseUrl = "对应环境的HTML5网关URL";
+        String baseUrl = "对应环境的HTML5网关URL";
 
         String appKey = "量子保为开发者分配的app_key";
 
