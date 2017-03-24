@@ -132,7 +132,7 @@ final public class Client {
         responseParams.remove("sign");
 
         if (!PacketUtil.verify(sign, this.lzbPublicKey, responseParams)) {
-            throw new SignVerificationError("response signature fails to verify");
+            throw new SignVerificationError("Signature fails to verify");
         }
 
         return PacketUtil.bizParamsDecrypt(this.privateKey, responseParams.get("biz_content"));
@@ -159,5 +159,25 @@ final public class Client {
         protocolParams.put("sign", sign);
 
         return ProtocolUtil.buildRequestUrl(this.baseUrl, protocolParams);
+    }
+
+    /**
+     * 验证参数签名，提取业务参数列表，并返回。
+     * 该方法通常在处理回调接口场景中使用
+     *
+     * @param params 公共请求参数列表，包括签名
+     * @return 业务参数列表
+     * @throws SignVerificationError 公共参数签名验证失败
+     */
+    public JSONObject verifySignature(Map<String,String> params)
+            throws SignVerificationError {
+        String sign = params.get("sign");
+        params.remove("sign");
+
+        if (!PacketUtil.verify(sign, this.lzbPublicKey, params)) {
+            throw new SignVerificationError("Signature fails to verify");
+        }
+
+        return PacketUtil.bizParamsDecrypt(this.privateKey, params.get("biz_content"));
     }
 }
