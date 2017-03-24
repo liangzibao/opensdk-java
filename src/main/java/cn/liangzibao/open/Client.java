@@ -127,15 +127,7 @@ final public class Client {
             throw new ResponseError(responseParams.get("ret_msg"), Long.valueOf(responseParams.get("ret_code")));
         }
 
-        //verify response sign
-        sign = responseParams.get("sign");
-        responseParams.remove("sign");
-
-        if (!PacketUtil.verify(sign, this.lzbPublicKey, responseParams)) {
-            throw new SignVerificationError("Signature fails to verify");
-        }
-
-        return PacketUtil.bizParamsDecrypt(this.privateKey, responseParams.get("biz_content"));
+        return this.verifySignature(responseParams);
     }
 
     /**

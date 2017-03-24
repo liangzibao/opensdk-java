@@ -74,3 +74,37 @@
     }
 
 </code></pre>
+
+## 回调处理例子
+
+<pre><code>
+
+    String baseUrl = "对应环境的HTML5网关URL";
+
+    String appKey = "量子保为开发者分配的app_key";
+
+    //量子保对应环境的公钥
+    String lzbPublicKey = "-----BEGIN PUBLIC KEY-----\n" +
+            "..." +
+            "-----END PUBLIC KEY-----";
+
+    //开发者密钥对的私钥，请私密保管
+    //注意格式是：PKCS8格式
+    String privateKey = "-----BEGIN PRIVATE KEY-----\n" +
+            "..." +
+            "-----END PRIVATE KEY-----";
+
+    Client client = new Client(baseUrl, privateKey, lzbPublicKey, appKey);
+
+    JSONObject params;
+    try {
+        params = client.verifySignature(params);
+        
+        //处理回调信息，返回ret_code为200
+        ...
+    } catch (Exception e) {
+        //记录签名失败，返回错误
+        ...
+    }
+    
+</code></pre>
