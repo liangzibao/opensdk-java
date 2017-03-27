@@ -96,15 +96,25 @@
 
     Client client = new Client(baseUrl, privateKey, lzbPublicKey, appKey);
 
-    JSONObject params;
+    //公共参数列表
+    Map<String, String> commonParams = new HashMap<String, String>;
+    //构建公共参数列表
+    ...
+
+    JSONObject params; //业务参数列表
+    JSONObject result = new JSONObject(); //响应参数列表
     try {
-        params = client.verifySignature(params);
-        
+        //验证签名，并获取业务参数列表
+        params = client.verifySignature(commonParams);
+
         //处理回调信息，返回ret_code为200
         ...
+        result.put("ret_code", 200);
     } catch (Exception e) {
-        //记录签名失败，返回错误
+        //处理签名失败，返回错误
         ...
+        result.put("ret_code", 410); //自定义，非200
+        result.put("ret_msg", "Fail to verify the signature"); //自定义出错信息
     }
-    
+        
 </code></pre>
