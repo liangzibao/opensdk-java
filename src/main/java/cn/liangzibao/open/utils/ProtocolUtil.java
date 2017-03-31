@@ -36,7 +36,7 @@ import java.util.Map;
 
 public class ProtocolUtil {
 
-    static final String USER_AGENT = "LZB/Openapi SDK/v1.0.0(Java 1.8)";
+    static final String USER_AGENT = "LZB/Openapi SDK/v1.1.0(Java)";
     static final String CONTENT_TYPE = "application/x-www-form-urlencoded;charset=utf-8";
 
     static public Map<String, String> invoke(String Url, Map<String, String> params) throws IOException {
