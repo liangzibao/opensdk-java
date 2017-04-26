@@ -13,6 +13,8 @@
 
 package cn.liangzibao.open;
 
+import cn.liangzibao.open.exception.DecryptCommonParamsError;
+import cn.liangzibao.open.exception.Exception;
 import cn.liangzibao.open.exception.ResponseError;
 import cn.liangzibao.open.exception.SignVerificationError;
 import cn.liangzibao.open.utils.PacketUtil;
@@ -72,7 +74,7 @@ final public class Client {
         try {
             this.privateKey = PacketUtil.buildPrivateKeyFromString(privateKey);
             this.lzbPublicKey = PacketUtil.buildPublicKeyFromString(lzbPublicKey);
-        } catch (Exception e) {
+        } catch (java.lang.Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -94,12 +96,13 @@ final public class Client {
      * @param bizParams 业务API请求参数表
      * @return 返回业务API响应参数表，JSON对象
      * @throws ProtocolException 网络传输层错误异常
+     * @throws DecryptCommonParamsError 业务参数解密失败
      * @throws SignVerificationError 响应报文签名验证失败
      * @throws ResponseError 调用失败异常
      */
     @SuppressWarnings("unchecked")
     public JSONObject invoke(String serviceName, JSONObject bizParams)
-            throws ProtocolException, SignVerificationError, ResponseError {
+            throws ProtocolException, SignVerificationError, DecryptCommonParamsError, ResponseError {
         String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
 
@@ -117,7 +120,7 @@ final public class Client {
         Map<String, String> responseParams;
         try {
             responseParams = ProtocolUtil.invoke(this.baseUrl, protocolParams);
-        } catch(Exception e) {
+        } catch(java.lang.Exception e) {
             throw new ProtocolException("Protocol runtime error", e);
         }
 
@@ -160,14 +163,20 @@ final public class Client {
      * @param params 公共请求参数列表，包括签名
      * @return 业务参数列表
      * @throws SignVerificationError 公共参数签名验证失败
+     * @throws DecryptCommonParamsError 业务参数解密失败
      */
     public JSONObject verifySignature(Map<String,String> params)
-            throws SignVerificationError {
+            throws SignVerificationError, DecryptCommonParamsError {
         String sign = params.get("sign");
         params.remove("sign");
 
         if (!PacketUtil.verify(sign, this.lzbPublicKey, params)) {
             throw new SignVerificationError("Signature fails to verify");
+        }
+
+        JSONObject return_params = PacketUtil.bizParamsDecrypt(this.privateKey, params.get("biz_content"));
+        if (return_params == null) {
+            throw new DecryptCommonParamsError("Fail to decrypt biz_content");
         }
 
         return PacketUtil.bizParamsDecrypt(this.privateKey, params.get("biz_content"));
