@@ -62,7 +62,7 @@
         Client client = new Client(baseUrl, privateKey, lzbPublicKey, appKey);
 
         try {
-			//请参看对应HTML5接入的业务文档
+            //请参看对应HTML5接入的业务文档
             JSONObject params = new JSONObject();
             String result = client.buildRequestUrl(params);
 
