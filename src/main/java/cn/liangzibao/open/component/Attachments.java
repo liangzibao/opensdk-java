@@ -22,9 +22,9 @@ public class Attachments {
             return;
         }
 
-        ArrayList fileList =  attachmentList.get(name);
-        if (fileList != null) {
-            fileList = new ArrayList<>();
+        ArrayList<File> fileList =  attachmentList.get(name);
+        if (fileList == null) {
+            fileList = new ArrayList<File>();
             this.attachmentList.put(name, fileList);
         }
         fileList.add(file);
@@ -37,4 +37,9 @@ public class Attachments {
     public Map<String, ArrayList<File>> getAttachmentList() {
         return this.attachmentList;
     }
+
+    public boolean isEmpty() {
+        return this.attachmentList.isEmpty();
+    }
+    
 }

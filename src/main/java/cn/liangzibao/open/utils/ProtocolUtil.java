@@ -51,7 +51,8 @@ public class ProtocolUtil {
             final HttpPost requestMethod = new HttpPost(Url);
             
             requestMethod.setHeader("User-Agent", USER_AGENT);
-            if (attachmentList == null) {
+            if (attachmentList == null
+                    || attachmentList.isEmpty()) {
                 requestMethod.setHeader("Content-Type", CONTENT_TYPE);
             }
             requestMethod.setEntity(ProtocolUtil.buildRequest(params, attachmentList));
@@ -94,7 +95,8 @@ public class ProtocolUtil {
     }
 
     static private HttpEntity buildRequest(Map<String, String> params, Attachments attachmentList) {
-        if (attachmentList == null) {
+        if (attachmentList == null
+                || attachmentList.isEmpty()) {
             List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 
             for (String key : params.keySet()) {
