@@ -13,6 +13,7 @@
 
 package cn.liangzibao.open;
 
+import cn.liangzibao.open.component.Attachments;
 import cn.liangzibao.open.exception.DecryptCommonParamsError;
 import cn.liangzibao.open.exception.Exception;
 import cn.liangzibao.open.exception.ResponseError;
@@ -100,8 +101,25 @@ final public class Client {
      * @throws SignVerificationError 响应报文签名验证失败
      * @throws ResponseError 调用失败异常
      */
-    @SuppressWarnings("unchecked")
     public JSONObject invoke(String serviceName, JSONObject bizParams)
+            throws ProtocolException, SignVerificationError, DecryptCommonParamsError, ResponseError {
+        return this.invoke(serviceName, bizParams, null);
+    }
+
+    /**
+     * 应用调用
+     *
+     * @param serviceName 业务API名称
+     * @param bizParams 业务API请求参数表
+     * @param attachmentList 上传文件列表
+     * @return 返回业务API响应参数表，JSON对象
+     * @throws ProtocolException 网络传输层错误异常
+     * @throws DecryptCommonParamsError 业务参数解密失败
+     * @throws SignVerificationError 响应报文签名验证失败
+     * @throws ResponseError 调用失败异常
+     */
+    @SuppressWarnings("unchecked")
+    public JSONObject invoke(String serviceName, JSONObject bizParams, Attachments attachmentList)
             throws ProtocolException, SignVerificationError, DecryptCommonParamsError, ResponseError {
         String bizContent = PacketUtil.bizParamsEncrypt(this.lzbPublicKey, bizParams);
         Long requestTime = new Date().getTime()/1000;
@@ -119,7 +137,7 @@ final public class Client {
         //send request
         Map<String, String> responseParams;
         try {
-            responseParams = ProtocolUtil.invoke(this.baseUrl, protocolParams);
+            responseParams = ProtocolUtil.invoke(this.baseUrl, protocolParams, attachmentList);
         } catch(java.lang.Exception e) {
             throw new ProtocolException("Protocol runtime error", e);
         }
