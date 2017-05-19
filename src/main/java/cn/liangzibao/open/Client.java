@@ -15,7 +15,6 @@ package cn.liangzibao.open;
 
 import cn.liangzibao.open.component.Attachments;
 import cn.liangzibao.open.exception.DecryptCommonParamsError;
-import cn.liangzibao.open.exception.Exception;
 import cn.liangzibao.open.exception.ResponseError;
 import cn.liangzibao.open.exception.SignVerificationError;
 import cn.liangzibao.open.utils.PacketUtil;

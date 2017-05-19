@@ -28,7 +28,12 @@
             String serviceName = "业务API名称";
             //请参考业务API文档，进行JSON对象的组装
             JSONObject params = new JSONObject();
-            JSONObject result = client.invoke(serviceName, params);
+
+            //添加上传图片,请参考业务API文档,设置上传图片
+            Attachments attachmentList = new Attachments();
+            attachmentList.addAttachment("图片变量名", "图片路径");
+
+            JSONObject result = client.invoke(serviceName, params, attachmentList);
 
             System.out.println(result);
         } catch (Exception e) {

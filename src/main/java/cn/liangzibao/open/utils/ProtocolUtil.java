@@ -34,6 +34,7 @@ import org.json.simple.JSONValue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +82,7 @@ public class ProtocolUtil {
 
     static public String buildRequestUrl(String Url, Map<String, String> params) {
         try {
-            List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+            List<NameValuePair> postParams = new ArrayList<>();
             for (String key : params.keySet()) {
                 postParams.add(new BasicNameValuePair(key, params.get(key)));
             }
@@ -89,29 +90,30 @@ public class ProtocolUtil {
 
             return Url + "?" + urlParam;
         } catch(Exception e) {
+            //empty
         }
 
         return null;
     }
 
-    static private HttpEntity buildRequest(Map<String, String> params, Attachments attachmentList) {
+    static private HttpEntity buildRequest(Map<String, String> params, Attachments attachmentList)
+        throws UnsupportedEncodingException {
         if (attachmentList == null
                 || attachmentList.isEmpty()) {
-            List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+            List<NameValuePair> postParams = new ArrayList<>();
 
             for (String key : params.keySet()) {
                 postParams.add(new BasicNameValuePair(key, params.get(key)));
             }
 
-            try {
-                HttpEntity entity = new UrlEncodedFormEntity(postParams);
-                return entity;
-            } catch(Exception e) {
-                return null;
-            }
+            return new UrlEncodedFormEntity(postParams);
         } else {
             MultipartEntityBuilder mpBuilder = MultipartEntityBuilder.create();
             mpBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+            for (String key : params.keySet()) {
+                mpBuilder.addTextBody(key, params.get(key));
+            }
 
             Map<String, ArrayList<File>> allAttachments = attachmentList.getAttachmentList();
             for (String key : allAttachments.keySet()) {
@@ -135,7 +137,7 @@ public class ProtocolUtil {
         JSONObject responseJson;
         responseJson = (JSONObject) JSONValue.parse(responseBody);
 
-        Map<String, String> responseMap = new HashMap<String, String>();
+        Map<String, String> responseMap = new HashMap<>();
         for (Object key : responseJson.keySet()) {
             responseMap.put((String)key, responseJson.get(key).toString());
         }

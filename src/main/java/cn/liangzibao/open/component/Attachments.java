@@ -18,7 +18,8 @@ public class Attachments {
 
     public void addAttachment(String name, String filepath) {
         File file = new File(filepath);
-        if (!file.exists()) {
+        if (!file.exists()
+                || !file.isFile()) {
             return;
         }
 
@@ -41,5 +42,5 @@ public class Attachments {
     public boolean isEmpty() {
         return this.attachmentList.isEmpty();
     }
-    
+
 }
